@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>LayoutParserMcp</AssemblyName>
+    <RootNamespace>LayoutParserMcp</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Mantém o SDK genérico (o stdio não precisa do Web SDK); Kestrel/WebApplication vêm por
+         FrameworkReference e só são usados com LAYOUTPARSER_MCP_TRANSPORT=http. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- SDK oficial C# do Model Context Protocol (mantido com a Microsoft). -->
+    <PackageReference Include="ModelContextProtocol" Version="2.2.0" />
+    <!-- Transporte HTTP streamable (modo Hub). O stdio continua no pacote base. -->
+    <PackageReference Include="ModelContextProtocol.AspNetCore" Version="2.2.0" />
+    <!-- Persistência do Hub (ADO.NET cru, mesma versão da API). -->
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.7" />
+    <!-- Logging estruturado (mesmo padrão da API — ver Program.cs). Console vai pra stderr:
+         o protocolo MCP usa stdout, então stdout não pode ser poluído com log. -->
+    <PackageReference Include="Serilog" Version="4.4.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="10.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Script de esquema acompanha o build só como referência; NÃO é executado pelo serviço. -->
+    <None Include="sql\**\*.sql" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,8 @@
+bin/
+obj/
+.vs/
+*.user
+Logs/
+logs/
+.env
+*.env
