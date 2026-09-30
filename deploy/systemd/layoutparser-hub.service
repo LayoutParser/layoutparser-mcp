@@ -1,0 +1,32 @@
+# MCP Hub (LayoutParserMcp em modo http) como serviço systemd na VM Ubuntu.
+#
+# Instalação (ver deploy/README.md):
+#   sudo cp deploy/systemd/layoutparser-hub.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now layoutparser-hub
+#
+# Segredos NÃO ficam aqui: vêm de /home/elson/layoutparser/hub.env (chmod 600, fora do git) com
+#   LAYOUTPARSER_MCP_TRANSPORT=http
+#   MCP_HUB_TOKEN_PEPPER=...
+#   MCP_HUB_SQL_CONNECTION='Server=127.0.0.1,1433;Database=LayoutParserIdentity;...'
+# Ajuste User, caminhos e DOTNET_ROOT se a VM for diferente.
+
+[Unit]
+Description=LayoutParser MCP Hub (HTTP)
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=elson
+WorkingDirectory=/home/elson/layoutparser/layoutparser-mcp/LayoutParserMcp
+Environment=DOTNET_ROOT=/home/elson/.dotnet
+Environment=DOTNET_NOLOGO=1
+EnvironmentFile=/home/elson/layoutparser/hub.env
+ExecStart=/home/elson/.dotnet/dotnet /home/elson/layoutparser/layoutparser-mcp/LayoutParserMcp/bin/Release/net10.0/LayoutParserMcp.dll
+Restart=on-failure
+RestartSec=5
+# O banco pode demorar a subir depois de um reboot; não desiste na primeira falha.
+StartLimitIntervalSec=0
+
+[Install]
+WantedBy=multi-user.target
